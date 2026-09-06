@@ -1,0 +1,139 @@
+/* Intentionally quieter than the rest of the page. */
+.footer {
+  background: #fff;
+  border-top: 1px solid var(--border);
+  padding-top: 60px;
+}
+
+.inner {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 2.1fr);
+  gap: 48px;
+  padding-bottom: 48px;
+}
+
+.brand {
+  max-width: 340px;
+}
+
+.blurb {
+  margin-top: 18px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 32px 24px;
+}
+
+.colTitle {
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: -0.008em;
+  margin-bottom: 14px;
+}
+
+.colList,
+.contactList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.colLink {
+  color: var(--muted);
+  font-size: 13.5px;
+  line-height: 1.5;
+  transition: color 0.2s var(--ease), padding-left 0.2s var(--ease);
+}
+
+.colLink:hover {
+  color: var(--pink-text);
+  padding-left: 3px;
+}
+
+.contactList li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.contactIcon {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: var(--tint-lav);
+  color: var(--violet);
+  flex: none;
+  margin-top: 1px;
+}
+
+.contactText {
+  color: var(--muted);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+/* Same type as every other footer line — the address is set over four lines
+   rather than given its own larger scale. */
+.address {
+  color: var(--muted);
+  font-size: 13.5px;
+  font-style: normal;
+  line-height: 1.55;
+}
+
+.legal {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding-block: 20px;
+  border-top: 1px solid var(--border);
+  color: var(--muted-2);
+  font-size: 13px;
+}
+
+.legalLinks {
+  display: flex;
+  gap: 22px;
+}
+
+.legalLinks a:hover {
+  color: var(--pink-text);
+}
+
+@media (max-width: 1024px) {
+  .inner {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+  .brand {
+    max-width: 460px;
+  }
+}
+
+@media (max-width: 720px) {
+  .footer {
+    padding-top: 44px;
+  }
+  .columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px 20px;
+  }
+  .legal {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 359px) {
+  .columns {
+    grid-template-columns: 1fr;
+  }
+}

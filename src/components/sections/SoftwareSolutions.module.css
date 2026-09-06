@@ -1,0 +1,153 @@
+.head {
+  margin-bottom: 34px;
+}
+
+.title {
+  margin-top: 16px;
+}
+
+.head .kxLead,
+.head :global(.kx-lead) {
+  margin-top: 12px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.card {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  align-items: center;
+  gap: 10px;
+  border-radius: var(--r-lg);
+  padding: 30px 0 30px 30px;
+  overflow: hidden;
+  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 44px rgba(21, 10, 56, 0.09);
+}
+
+/* Card grounds match the backgrounds baked into the supplied dashboards, so
+   the opaque product shots blend into the card with no visible edge. */
+.violet {
+  background: linear-gradient(120deg, #f6f0fe 0%, var(--asset-salon) 46%, var(--asset-salon) 100%);
+}
+.pink {
+  background: linear-gradient(120deg, #fef3f8 0%, var(--asset-gym) 46%, var(--asset-gym) 100%);
+}
+
+.copy {
+  min-width: 0;
+}
+
+.productTitle {
+  font-size: clamp(18px, 1vw + 10px, 21px);
+  line-height: 1.26;
+  letter-spacing: -0.022em;
+}
+.violet .productTitle {
+  color: var(--violet);
+}
+.pink .productTitle {
+  color: var(--pink);
+}
+
+.body {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.65;
+  max-width: 34ch;
+}
+
+.features {
+  margin: 16px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.features li {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+
+.check {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  color: #fff;
+  flex: none;
+}
+.violet .check {
+  background: var(--grad-violet);
+}
+.pink .check {
+  background: var(--grad-pink);
+}
+
+.cta {
+  margin-top: 20px;
+}
+
+.shot {
+  min-width: 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+/* The dashboard is cropped tight to its own panel, so the frame that used to
+   be baked into the artwork is supplied here instead: rounded corners clip the
+   crop's anti-aliased edge, and the shadow lifts it off the card. */
+.shotImage {
+  width: 100%;
+  max-width: 460px;
+  height: auto;
+  border-radius: 9px;
+  box-shadow: 0 2px 6px rgba(21, 10, 56, 0.06), 0 16px 38px rgba(21, 10, 56, 0.13);
+}
+
+@media (max-width: 1240px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .card {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    padding: 34px 0 34px 34px;
+  }
+  .body {
+    max-width: 46ch;
+  }
+}
+
+@media (max-width: 760px) {
+  .card {
+    grid-template-columns: 1fr;
+    /* Bottom padding restored: the dashboard is now a framed panel that sits
+       inside the card, rather than artwork that bled off its edges. */
+    padding: 28px 24px 28px;
+    gap: 22px;
+  }
+  .shot {
+    justify-content: center;
+  }
+  .shotImage {
+    max-width: 100%;
+  }
+  .body {
+    max-width: 100%;
+  }
+}

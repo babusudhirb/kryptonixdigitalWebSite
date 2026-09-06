@@ -1,0 +1,23 @@
+/* Height-driven so the 3.09:1 asset keeps its exact proportions at every size.
+   Never set both dimensions here, and never use object-fit: cover — either
+   would crop or distort the mark. */
+.image {
+  height: 50px;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+@media (max-width: 1024px) {
+  .image {
+    height: 44px;
+  }
+}
+
+/* At 360px the bar carries the logo, a 46px burger and 2 x 20px gutters;
+   34px of logo height (105px wide) leaves comfortable room. */
+@media (max-width: 400px) {
+  .image {
+    height: 34px;
+  }
+}

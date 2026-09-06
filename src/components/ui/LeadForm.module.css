@@ -1,0 +1,202 @@
+.wrap {
+  padding-right: 20px;
+}
+
+.title {
+  /* Clears the close button sitting in the panel's top-right corner. */
+  padding-right: 40px;
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+.lead {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.68;
+}
+
+.form {
+  display: grid;
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.label {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.req {
+  color: var(--pink-text);
+}
+
+.opt {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.input {
+  width: 100%;
+  height: 46px;
+  padding-inline: 14px;
+  border: 1px solid var(--border-2);
+  border-radius: var(--r-btn);
+  background: #fdfbff;
+  color: var(--ink);
+  font-size: 15px;
+  transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease),
+    background-color 0.2s var(--ease);
+}
+
+.input::placeholder {
+  color: #a49dba;
+}
+
+.input:hover {
+  border-color: #cfbcee;
+}
+
+.input:focus {
+  outline: none;
+  background: #fff;
+  border-color: var(--violet);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.16);
+}
+
+/* The global :focus-visible ring would sit outside the field and clash with
+   the inset ring above, so opt these controls out of it. */
+.input:focus-visible {
+  outline: none;
+}
+
+.bad {
+  border-color: #e0709f;
+  background: #fff8fb;
+}
+
+.bad:focus {
+  border-color: var(--pink-text);
+  box-shadow: 0 0 0 3px rgba(216, 15, 105, 0.16);
+}
+
+.select {
+  appearance: none;
+  /* Chevron drawn inline so no extra request or icon component is needed. */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236b6383' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 38px;
+  cursor: pointer;
+}
+
+.err {
+  color: var(--pink-text);
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+.formErr {
+  padding: 11px 14px;
+  border: 1px solid #f3cede;
+  border-radius: var(--r-btn);
+  background: #fff5f9;
+  color: var(--pink-text);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.formErr a {
+  text-decoration: underline;
+  font-weight: 700;
+}
+
+.submit {
+  width: 100%;
+  margin-top: 4px;
+}
+
+.submit:disabled {
+  opacity: 0.75;
+  cursor: progress;
+  transform: none;
+}
+
+.spin {
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- Success ---------- */
+.done {
+  padding: 26px 20px 4px 0;
+  text-align: center;
+}
+
+.doneTile {
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 20px;
+  border-radius: 999px;
+  background: var(--grad-violet);
+  color: #fff;
+  box-shadow: var(--shadow-violet);
+}
+
+.doneTitle {
+  font-size: 21px;
+  line-height: 1.25;
+}
+
+.doneBody {
+  margin: 10px 0 24px;
+  color: var(--muted);
+  font-size: 14.5px;
+  line-height: 1.65;
+}
+
+@media (min-width: 560px) {
+  /* Name + business share a row once there is space for two 46px fields. */
+  .form {
+    grid-template-columns: 1fr 1fr;
+    column-gap: 14px;
+  }
+  .form > *:nth-child(n + 3) {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 480px) {
+  .wrap {
+    padding-right: 12px;
+  }
+  .title {
+    font-size: 21px;
+  }
+  /* 16px stops iOS zooming the page when a field takes focus. */
+  .input {
+    font-size: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spin {
+    animation: none;
+  }
+}

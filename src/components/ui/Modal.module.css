@@ -1,0 +1,106 @@
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(21, 10, 56, 0.48);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  animation: fade 0.22s var(--ease);
+}
+
+.panel {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: #fff;
+  border-radius: var(--r-lg);
+  box-shadow: 0 24px 70px rgba(21, 10, 56, 0.34);
+  animation: rise 0.28s var(--ease);
+}
+
+.lg {
+  max-width: 520px;
+}
+
+/* A soft lavender wash across the top edge, so the white surface still reads
+   as part of the Kryptonix palette rather than a system alert. */
+.panel::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 132px;
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  background: linear-gradient(170deg, #f6efff 0%, rgba(253, 247, 255, 0) 100%);
+  pointer-events: none;
+}
+
+.body {
+  position: relative;
+  padding: 30px 30px 28px;
+}
+
+.close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.7);
+  transition: color 0.2s var(--ease), background-color 0.2s var(--ease);
+}
+
+.close:hover {
+  color: var(--ink);
+  background: var(--tint-lav);
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.985);
+  }
+}
+
+@media (max-width: 480px) {
+  .root {
+    padding: 14px;
+    /* Sit the panel a little high so an open keyboard does not cover it. */
+    align-items: start;
+    padding-top: max(14px, 4vh);
+  }
+  .body {
+    padding: 26px 20px 24px;
+  }
+  .panel {
+    max-height: calc(100dvh - 28px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .backdrop,
+  .panel {
+    animation: none;
+  }
+}

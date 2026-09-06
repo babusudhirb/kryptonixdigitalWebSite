@@ -1,0 +1,100 @@
+.flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 6px 4px;
+  margin: 0;
+}
+
+/* Sized so all five steps stay on one row inside the narrow three-across
+   card, matching the reference's single-line journey. */
+.step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  width: 54px;
+  padding-right: 12px;
+  text-align: center;
+}
+
+.step:last-child {
+  padding-right: 0;
+}
+
+/* Thin connector arrow, vertically centred on the tile row. */
+.step:not(:last-child)::after {
+  content: "→";
+  position: absolute;
+  right: -1px;
+  top: 8px;
+  font-size: 12px;
+  line-height: 1;
+  opacity: 0.62;
+}
+
+.violet .step::after {
+  color: var(--violet);
+}
+.pink .step::after {
+  color: var(--pink);
+}
+
+.tile {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(21, 10, 56, 0.05), 0 6px 16px rgba(21, 10, 56, 0.06);
+  flex: none;
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease);
+}
+
+.violet .tile {
+  color: var(--violet);
+}
+.pink .tile {
+  color: var(--pink);
+}
+
+.step:hover .tile {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(21, 10, 56, 0.06), 0 12px 26px rgba(21, 10, 56, 0.1);
+}
+
+.label {
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ink-2);
+  letter-spacing: -0.005em;
+}
+
+@container (min-width: 620px) {
+  .step {
+    width: 92px;
+    padding-right: 22px;
+  }
+  .tile {
+    width: 50px;
+    height: 50px;
+    border-radius: 14px;
+  }
+  .step:not(:last-child)::after {
+    top: 16px;
+    font-size: 16px;
+  }
+  .label {
+    font-size: 12.5px;
+  }
+}
+
+/* Outside a size container (e.g. inside a plain section), use the roomy size. */
+@media (min-width: 1201px) {
+  .flow {
+    gap: 6px 2px;
+  }
+}

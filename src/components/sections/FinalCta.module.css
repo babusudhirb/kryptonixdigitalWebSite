@@ -1,0 +1,133 @@
+.band {
+  padding-bottom: var(--section-y);
+}
+
+.banner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  background: var(--grad-cta);
+  border-radius: var(--r-lg);
+  padding: 44px 48px;
+  /* The reference lets the person break above the banner's top edge. */
+  overflow: visible;
+  box-shadow: 0 22px 54px rgba(124, 58, 237, 0.28);
+  margin-top: 86px;
+}
+
+/* Soft magenta bloom behind the person, mirroring the reference. */
+.banner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    58% 130% at 24% 50%,
+    rgba(219, 63, 214, 0.45) 0%,
+    rgba(219, 63, 214, 0) 70%
+  );
+  pointer-events: none;
+}
+
+.person {
+  position: absolute;
+  left: 30px;
+  bottom: 0;
+  width: 340px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* A genuine cut-out with its own alpha channel — no clip-path, no blur, no
+   filter of any kind. Anything applied here would only soften it. */
+.personImage {
+  width: 100%;
+  height: auto;
+}
+
+.copy {
+  position: relative;
+  z-index: 3;
+  margin-left: 372px;
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  color: #fff;
+  font-size: clamp(24px, 2.2vw + 12px, 34px);
+  line-height: 1.16;
+  letter-spacing: -0.022em;
+}
+
+.lead {
+  margin-top: 12px;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 14.5px;
+  line-height: 1.65;
+  max-width: 44ch;
+}
+
+.arrow {
+  position: relative;
+  z-index: 3;
+  flex: none;
+  width: 104px;
+  height: auto;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.cta {
+  position: relative;
+  z-index: 3;
+  flex: none;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1100px) {
+  .banner {
+    padding: 40px 36px;
+    gap: 20px;
+  }
+  .person {
+    left: 16px;
+    width: 250px;
+  }
+  .copy {
+    margin-left: 276px;
+  }
+  .arrow {
+    display: none;
+  }
+}
+
+@media (max-width: 860px) {
+  .banner {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 34px 26px;
+    margin-top: 24px;
+    overflow: hidden;
+  }
+  /* Stacked: she sits inside the banner, so no negative offset — the banner
+     clips its overflow here and a negative margin would shave her head. */
+  .person {
+    position: relative;
+    left: auto;
+    bottom: auto;
+    width: min(238px, 62vw);
+    margin: 0 auto 10px;
+  }
+  .copy {
+    margin-left: 0;
+  }
+  .lead {
+    margin-inline: auto;
+  }
+  .cta {
+    width: 100%;
+    max-width: 320px;
+  }
+}

@@ -1,0 +1,264 @@
+/* Wide process card beside a narrower results card, as in the reference. */
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.42fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: stretch;
+}
+
+.card {
+  position: relative;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--border);
+  background: linear-gradient(150deg, #fdfbff 0%, #f8f4fd 100%);
+  box-shadow: var(--shadow-card);
+  padding: 32px;
+  overflow: hidden;
+}
+
+.process {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 26px;
+  align-items: center;
+}
+
+.title {
+  margin-top: 14px;
+  font-size: clamp(21px, 1.4vw + 12px, 27px);
+}
+
+/* Narrower card, so this heading needs a slightly tighter setting to keep to
+   two lines like the reference. */
+.results .title {
+  font-size: clamp(20px, 1.2vw + 12px, 25px);
+}
+
+.lead {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 13.5px;
+}
+
+/* ---------- Process timeline ---------- */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 30px 0 0;
+}
+
+.step {
+  position: relative;
+  min-width: 0;
+}
+
+.disc {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  background: var(--grad-violet);
+  color: #fff;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  box-shadow: 0 6px 16px rgba(124, 58, 237, 0.28);
+  position: relative;
+  z-index: 2;
+}
+
+/* Dashed connector between discs, with a small arrow head. */
+.step:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  left: 46px;
+  right: 14px;
+  top: 18px;
+  height: 2px;
+  background: repeating-linear-gradient(
+    90deg,
+    #c9b6ed 0 5px,
+    transparent 5px 11px
+  );
+}
+
+.step:not(:last-child)::after {
+  content: "→";
+  position: absolute;
+  right: 0;
+  top: 8px;
+  font-size: 14px;
+  line-height: 1;
+  color: #b79fe4;
+}
+
+.stepTitle {
+  margin-top: 16px;
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.stepBody {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.55;
+  padding-right: 6px;
+}
+
+/* ---------- Circular team visual ---------- */
+.ring {
+  position: relative;
+  flex: none;
+  width: 188px;
+  height: 188px;
+  border-radius: 999px;
+  padding: 9px;
+  border: 2px dashed #c4a9ef;
+  display: grid;
+  place-items: center;
+}
+
+/* Small accent dot on the ring, as in the reference. */
+.ring::after {
+  content: "";
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: var(--violet);
+  transform: translate(-50%, -50%);
+}
+
+.ringImage {
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #f1e9fd;
+}
+
+/* ---------- Results ---------- */
+.results {
+  display: flex;
+  flex-direction: column;
+  /* Stops the eyebrow pill from stretching to the card width. */
+  align-items: flex-start;
+  background: linear-gradient(150deg, #fdfaff 0%, #faf3fd 100%);
+}
+
+.resultsBody {
+  align-self: stretch;
+}
+
+.resultsBody {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  margin-top: 4px;
+}
+
+.wins {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  margin: 18px 0 0;
+  flex: 1;
+  min-width: 0;
+}
+
+.wins li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+
+.check {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--grad-violet);
+  color: #fff;
+  flex: none;
+}
+
+.chart {
+  flex: none;
+  width: 44%;
+  max-width: 214px;
+  height: auto;
+  align-self: center;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1180px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .ring {
+    width: 260px;
+    height: 260px;
+  }
+  .chart {
+    max-width: 300px;
+  }
+}
+
+@media (max-width: 860px) {
+  .card {
+    padding: 28px 24px;
+  }
+  .process {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .ring {
+    justify-self: center;
+  }
+  .steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px 16px;
+  }
+  /* Connectors only make sense along a single row. */
+  .step:nth-child(2n)::before,
+  .step:nth-child(2n)::after {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .steps {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .step::before,
+  .step::after {
+    display: none !important;
+  }
+  /* Stop the wins list and the chart crowding each other on narrow screens. */
+  .resultsBody {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+  }
+  .chart {
+    width: 100%;
+    max-width: 280px;
+    align-self: center;
+  }
+  .ring {
+    width: min(240px, 74vw);
+    height: min(240px, 74vw);
+  }
+}
