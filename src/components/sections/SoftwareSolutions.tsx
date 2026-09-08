@@ -5,10 +5,12 @@ import { productCrops, products } from "@/content/site";
 import { Reveal } from "@/components/ui/Reveal";
 import { SpriteImage } from "@/components/ui/SpriteImage";
 import { useDialog } from "@/components/ui/DialogProvider";
+import { useTilt } from "@/components/ui/useTilt";
 import styles from "./SoftwareSolutions.module.css";
 
 export function SoftwareSolutions() {
   const { open } = useDialog();
+  const tilt = useTilt();
 
   return (
     <section className="kx-section" id="solutions" aria-labelledby="solutions-title">
@@ -33,6 +35,7 @@ export function SoftwareSolutions() {
               id={p.id}
               className={`${styles.card} ${p.tone === "violet" ? styles.violet : styles.pink}`}
               delay={i * 110}
+              {...tilt}
             >
               <div className={styles.copy}>
                 <h3 className={styles.productTitle}>

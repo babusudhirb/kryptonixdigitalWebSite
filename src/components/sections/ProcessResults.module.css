@@ -23,6 +23,12 @@
   align-items: center;
 }
 
+/* Grid items default to `min-width: auto`, which would let the phone step rail
+   below grow to its content width instead of scrolling inside itself. */
+.processCopy {
+  min-width: 0;
+}
+
 .title {
   margin-top: 14px;
   font-size: clamp(21px, 1.4vw + 12px, 27px);
@@ -221,7 +227,7 @@
   }
   .process {
     grid-template-columns: 1fr;
-    gap: 28px;
+    gap: 18px;
   }
   .ring {
     justify-self: center;
@@ -238,14 +244,42 @@
 }
 
 @media (max-width: 560px) {
+  /* Four stacked blocks ran to ~560px and shoved the team visual off-screen.
+     A snap rail keeps all four on one connected line at ~150px tall. The
+     overflow lives on this element, so the page itself never scrolls
+     sideways. */
   .steps {
-    grid-template-columns: 1fr;
-    gap: 20px;
+    display: flex;
+    grid-template-columns: none;
+    min-width: 0;
+    gap: 14px;
+    /* Stays inside the card's own padding: bleeding it to the card edge put
+       the "01" disc hard against the border. */
+    margin: 22px 0 0;
+    padding: 0 0 10px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
   }
-  .step::before,
-  .step::after {
-    display: none !important;
+  /* Narrow enough that a third step peeks in, so the rail reads as scrollable. */
+  .step {
+    flex: 0 0 168px;
+    scroll-snap-align: start;
   }
+  /* Connectors are the point of a rail, so the pair the two-column layout
+     above suppressed comes back between all four steps. */
+  .step:nth-child(2n):not(:last-child)::before,
+  .step:nth-child(2n):not(:last-child)::after {
+    display: block;
+  }
+  .step:not(:last-child)::before {
+    right: -8px;
+  }
+  .stepBody {
+    padding-right: 0;
+  }
+
   /* Stop the wins list and the chart crowding each other on narrow screens. */
   .resultsBody {
     flex-direction: column;
@@ -257,8 +291,9 @@
     max-width: 280px;
     align-self: center;
   }
+  /* With the rail this short, the team visual now follows immediately. */
   .ring {
-    width: min(240px, 74vw);
-    height: min(240px, 74vw);
+    width: min(200px, 60vw);
+    height: min(200px, 60vw);
   }
 }

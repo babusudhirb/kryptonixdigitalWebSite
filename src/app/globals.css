@@ -286,6 +286,18 @@ p {
   box-shadow: 0 12px 28px rgba(124, 58, 237, 0.36);
 }
 
+/* Violet-to-pink sweep used on the service cards. Composed from the existing
+   brand stops; both ends clear 4.5:1 against a white label. */
+.kx-btn--grad {
+  background: linear-gradient(92deg, var(--violet) 0%, var(--pink-text) 100%);
+  color: #fff;
+  box-shadow: 0 8px 22px rgba(150, 40, 170, 0.26);
+}
+.kx-btn--grad:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(150, 40, 170, 0.36);
+}
+
 .kx-btn--ghost {
   background: #fff;
   color: var(--ink);

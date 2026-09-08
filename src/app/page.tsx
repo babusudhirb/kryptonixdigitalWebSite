@@ -5,7 +5,9 @@ import { MetricStrip } from "@/components/sections/MetricStrip";
 import { Services } from "@/components/sections/Services";
 import { SoftwareSolutions } from "@/components/sections/SoftwareSolutions";
 import { GrowthChannels } from "@/components/sections/GrowthChannels";
+import { CaseStudies } from "@/components/sections/CaseStudies";
 import { ProcessResults } from "@/components/sections/ProcessResults";
+import { Careers } from "@/components/sections/Careers";
 import { FinalCta } from "@/components/sections/FinalCta";
 import { DialogProvider } from "@/components/ui/DialogProvider";
 
@@ -28,7 +30,11 @@ export default function HomePage() {
         <Services />
         <SoftwareSolutions />
         <GrowthChannels />
+        {/* Case Studies sits immediately before the process band; Careers
+            immediately after it — that band is what the nav calls "About Us". */}
+        <CaseStudies />
         <ProcessResults />
+        <Careers />
         <FinalCta />
       </main>
       <Footer />

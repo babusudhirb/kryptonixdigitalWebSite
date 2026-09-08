@@ -1,14 +1,17 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { ArrowRight, Menu, X } from "lucide-react";
 import { nav, primaryCta } from "@/content/site";
 import { useDialog } from "@/components/ui/DialogProvider";
+import { sectionHref } from "@/lib/links";
 import { Logo } from "./Logo";
 import styles from "./Header.module.css";
 
 export function Header() {
   const { open: openDialog } = useDialog();
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState<string>("#top");
@@ -51,12 +54,28 @@ export function Header() {
     toggleRef.current?.focus();
   }, []);
 
+  /* The drawer only exists below 1025px. If the viewport crosses that line while
+     it is open the panel is display:none'd by CSS but the scroll lock would keep
+     running, so dismiss it explicitly. */
+  useEffect(() => {
+    if (!open || typeof window.matchMedia !== "function") return;
+    const mq = window.matchMedia("(min-width: 1025px)");
+    const sync = () => mq.matches && setOpen(false);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, [open]);
+
   /* Drawer: scroll lock, Escape to dismiss and a simple focus trap. */
   useEffect(() => {
     if (!open) return;
 
-    const { overflow } = document.body.style;
+    const { overflow, paddingRight } = document.body.style;
+    /* Replace the scrollbar's width with padding, so locking the page cannot
+       shift the layout sideways. Zero on overlay-scrollbar platforms. */
+    const gutter = window.innerWidth - document.documentElement.clientWidth;
     document.body.style.overflow = "hidden";
+    if (gutter > 0) document.body.style.paddingRight = `${gutter}px`;
 
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -88,58 +107,70 @@ export function Header() {
 
     return () => {
       document.body.style.overflow = overflow;
+      document.body.style.paddingRight = paddingRight;
       document.removeEventListener("keydown", onKey);
     };
   }, [open, close]);
 
   return (
-    <header className={`${styles.header} ${scrolled ? styles.solid : ""}`}>
-      <div className={`kx-container ${styles.bar}`}>
-        <a href="#top" className={styles.brand} aria-label="Kryptonix — home">
-          <Logo decorative priority />
-        </a>
-
-        <nav className={styles.nav} aria-label="Primary">
-          <ul className={styles.navList}>
-            {nav.map((item) => (
-              <li key={item.href}>
-                <a
-                  href={item.href}
-                  className={`${styles.navLink} ${active === item.href ? styles.navActive : ""}`}
-                  aria-current={active === item.href ? "page" : undefined}
-                >
-                  {item.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        <div className={styles.actions}>
-          <button
-            type="button"
-            onClick={() => openDialog("lead")}
-            className={`kx-btn kx-btn--pink kx-btn--sm ${styles.cta}`}
+    <>
+      <header className={`${styles.header} ${scrolled ? styles.solid : ""}`}>
+        <div className={`kx-container ${styles.bar}`}>
+          <a
+            href={sectionHref("#top", pathname)}
+            className={styles.brand}
+            aria-label="Kryptonix — home"
           >
-            {primaryCta.label}
-            <ArrowRight size={17} className="kx-arrow" aria-hidden="true" />
-          </button>
+            <Logo decorative priority />
+          </a>
 
-          <button
-            ref={toggleRef}
-            type="button"
-            className={styles.burger}
-            aria-expanded={open}
-            aria-controls="kx-mobile-nav"
-            aria-label={open ? "Close menu" : "Open menu"}
-            onClick={() => setOpen((v) => !v)}
-          >
-            {open ? <X size={24} aria-hidden="true" /> : <Menu size={24} aria-hidden="true" />}
-          </button>
+          <nav className={styles.nav} aria-label="Primary">
+            <ul className={styles.navList}>
+              {nav.map((item) => (
+                <li key={item.href}>
+                  <a
+                    href={sectionHref(item.href, pathname)}
+                    className={`${styles.navLink} ${active === item.href ? styles.navActive : ""}`}
+                    aria-current={active === item.href ? "page" : undefined}
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <div className={styles.actions}>
+            <button
+              type="button"
+              onClick={() => openDialog("lead")}
+              className={`kx-btn kx-btn--pink kx-btn--sm ${styles.cta}`}
+            >
+              {primaryCta.label}
+              <ArrowRight size={17} className="kx-arrow" aria-hidden="true" />
+            </button>
+
+            <button
+              ref={toggleRef}
+              type="button"
+              className={styles.burger}
+              aria-expanded={open}
+              aria-controls="kx-mobile-nav"
+              aria-label={open ? "Close menu" : "Open menu"}
+              onClick={() => setOpen((v) => !v)}
+            >
+              {open ? <X size={24} aria-hidden="true" /> : <Menu size={24} aria-hidden="true" />}
+            </button>
+          </div>
         </div>
-      </div>
+      </header>
 
-      {/* Mobile drawer */}
+      {/* Mobile drawer — a SIBLING of <header>, never a child of it. Once the
+          bar is scrolled it carries `backdrop-filter`, and a filtered element
+          becomes the containing block for its `position: fixed` descendants:
+          nested here, the drawer was laid out inside the 72px bar and clipped
+          away by `.panelClip`, which is why the burger did nothing below the
+          fold. Out here it is anchored to the viewport at every scroll offset. */}
       <div
         className={`${styles.scrim} ${open ? styles.scrimOpen : ""}`}
         onClick={close}
@@ -148,42 +179,46 @@ export function Header() {
       {/* Fixed, viewport-sized clip frame. Without it the off-canvas panel
           still counts toward the document's scroll width even while hidden. */}
       <div className={styles.panelClip} aria-hidden={!open || undefined}>
-      <div
-        id="kx-mobile-nav"
-        ref={panelRef}
-        className={`${styles.panel} ${open ? styles.panelOpen : ""}`}
-        role="dialog"
-        aria-modal={open || undefined}
-        aria-label="Site menu"
-        // Keeps the closed drawer out of the tab order and off the a11y tree.
-        inert={!open}
-      >
-        <nav aria-label="Mobile">
-          <ul className={styles.panelList}>
-            {nav.map((item) => (
-              <li key={item.href}>
-                <a href={item.href} className={styles.panelLink} onClick={close}>
-                  {item.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-        <button
-          type="button"
-          className={`kx-btn kx-btn--pink ${styles.panelCta}`}
-          onClick={() => {
-            // Close the drawer first so the dialog is not layered over it and
-            // the body scroll lock is owned by one component at a time.
-            setOpen(false);
-            openDialog("lead");
-          }}
+        <div
+          id="kx-mobile-nav"
+          ref={panelRef}
+          className={`${styles.panel} ${open ? styles.panelOpen : ""}`}
+          role="dialog"
+          aria-modal={open || undefined}
+          aria-label="Site menu"
+          // Keeps the closed drawer out of the tab order and off the a11y tree.
+          inert={!open}
         >
-          {primaryCta.label}
-          <ArrowRight size={18} className="kx-arrow" aria-hidden="true" />
-        </button>
+          <nav aria-label="Mobile">
+            <ul className={styles.panelList}>
+              {nav.map((item) => (
+                <li key={item.href}>
+                  <a
+                    href={sectionHref(item.href, pathname)}
+                    className={styles.panelLink}
+                    onClick={close}
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+          <button
+            type="button"
+            className={`kx-btn kx-btn--pink ${styles.panelCta}`}
+            onClick={() => {
+              // Close the drawer first so the dialog is not layered over it and
+              // the body scroll lock is owned by one component at a time.
+              setOpen(false);
+              openDialog("lead");
+            }}
+          >
+            {primaryCta.label}
+            <ArrowRight size={18} className="kx-arrow" aria-hidden="true" />
+          </button>
+        </div>
       </div>
-      </div>
-    </header>
+    </>
   );
 }

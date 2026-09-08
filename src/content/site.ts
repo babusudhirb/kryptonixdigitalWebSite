@@ -11,8 +11,8 @@ export const brand = {
     "A complete business growth partner — we build the technology, bring the traffic, automate the work and help businesses grow.",
   phone: "+91 7004708826",
   phoneHref: "tel:+917004708826",
-  email: "hello@kryptonix.com",
-  emailHref: "mailto:hello@kryptonix.com",
+  email: "support@kryptonix.digital",
+  emailHref: "mailto:support@kryptonix.digital",
   /** Rendered one line per entry inside the footer's <address>. */
   address: [
     "Anusha Villa, flat number G1.",
@@ -29,15 +29,15 @@ export const brand = {
 export const primaryCta = { label: "Book a Strategy Call" } as const;
 
 /**
- * One-page site: "Case Studies" and "About Us" have no dedicated section in the
- * reference design, so they point at the closest real proof / story sections
- * rather than becoming dead links.
+ * One-page site. "About Us" points at the process/results band, which is the
+ * closest thing to a story section; everything else resolves to a real id.
+ * Careers lives in the footer only, to keep the header at six items.
  */
 export const nav = [
   { label: "Home", href: "#top" },
   { label: "Services", href: "#services" },
   { label: "Solutions", href: "#solutions" },
-  { label: "Case Studies", href: "#results" },
+  { label: "Case Studies", href: "#case-studies" },
   { label: "About Us", href: "#process" },
   { label: "Contact", href: "#contact" },
 ] as const;
@@ -63,128 +63,149 @@ export const metrics: { value: string; label: string; icon: MetricIcon }[] = [
 ];
 
 export type ServiceIcon =
-  | "code"
+  | "cog"
+  | "globe"
   | "search"
-  | "target"
-  | "bot"
-  | "monitor"
+  | "megaphone"
+  | "phoneCall"
   | "chart";
 
-/** Which hand-authored vignette sits in the card's visual well. */
-export type ServiceVisual = "code" | "rank" | "ads" | "flow" | "site" | "growth";
+/**
+ * Short label used under the banner illustration on phones, where the arc of
+ * six icons in the artwork is too small to read.
+ */
+export type ServiceChip = { label: string; icon: ServiceIcon };
 
 export const servicesHead = {
   badge: "Our services",
-  /** Second half is set in the violet accent. */
-  headline: ["What We Do For", "Your Business"],
-  lead: "From first build to daily operations, we create, market and automate the systems your business needs to win more customers and run better.",
+  /** Rendered as: plain / violet accent / pink accent. */
+  headline: ["What We Do For", "Salons", "& Gyms"],
+  lead: "We don't just market your business — we build the software, ads, and automation that run it.",
+  bannerAlt:
+    "A salon owner and a gym owner each working on a laptop, ringed by the six Kryptonix services: management software, website and booking, local SEO, ads that convert, missed-call automation and growth playbook.",
 } as const;
 
 /**
- * Six cards in a 3 x 2 grid. `tone` alternates diagonally (pink, lav, pink /
- * lav, pink, lav) so no two same-tinted cards touch, matching the reference
- * board. `points` is always four items — the card is sized around that.
+ * Six cards in a 3 x 2 grid, collapsing to 2 then 1 column. `tone` alternates
+ * diagonally (lav, pink, lav / pink, lav, pink) so no two same-tinted cards
+ * ever touch. `points` is four items on every card except 01, which carries
+ * five in the reference artwork.
  */
 export const services: {
   num: string;
   title: [string, string];
   body: string;
-  points: [string, string, string, string];
+  /** One-line blurb for the compact 2 x 3 phone grid, where `body` is too long.
+   *  The compact card's title comes from `serviceChips`, which is index-aligned
+   *  with this array. */
+  short: string;
+  points: string[];
   cta: string;
   icon: ServiceIcon;
-  visual: ServiceVisual;
   tone: "lav" | "pink";
 }[] = [
   {
     num: "01",
-    title: ["Software", "Development"],
-    body: "Custom software built around the way your business actually works, not the other way round.",
+    title: ["Salon & Gym", "Management Software"],
+    body: "Custom booking, staff, payroll, and inventory systems tailored to how your business actually runs.",
+    short: "Custom booking, staff, payroll, and inventory systems.",
     points: [
       "Built to your exact workflow",
-      "Scalable and secure",
-      "Third-party integrations",
+      "Staff scheduling & payroll",
+      "Inventory & stock tracking",
+      "Client records & history",
       "Ongoing support included",
     ],
-    cta: "Discuss Your Requirements",
-    icon: "code",
-    visual: "code",
-    tone: "pink",
+    cta: "Build My Software",
+    icon: "cog",
+    tone: "lav",
   },
   {
     num: "02",
-    title: ["SEO", "That Ranks"],
-    body: "Get found by the people already searching for what you sell, and turn that traffic into enquiries.",
+    title: ["Salon & Gym", "Website & Booking Pages"],
+    body: "Fast, mobile-first websites built to turn visitors into booked appointments and members.",
+    short: "Fast, mobile-first websites to turn visitors into booked clients.",
     points: [
-      "On-page and technical SEO",
-      "Local and Google Business",
-      "Authority link building",
-      "Transparent rank reporting",
+      "Online booking built in",
+      "Mobile-first design",
+      "Fast load times",
+      "SEO-ready structure",
     ],
-    cta: "Grow My Visibility",
-    icon: "search",
-    visual: "rank",
-    tone: "lav",
+    cta: "Get My Website",
+    icon: "globe",
+    tone: "pink",
   },
   {
     num: "03",
-    title: ["Google", "Ads"],
-    body: "Campaigns engineered for leads and bookings, with every rupee of spend accounted for.",
+    title: ["Local SEO", "for Salons & Gyms"],
+    body: "Get found first when someone nearby searches for a salon or gym like yours.",
+    short: "Get found first when someone nearby searches for a salon or gym.",
     points: [
-      "Search, Display and Performance Max",
-      "Conversion tracking set up properly",
-      "Lower cost per lead over time",
-      "Weekly optimisation",
+      "Google Business Profile optimization",
+      "Local keyword targeting",
+      "Verified backlink building",
+      "Monthly ranking reports",
     ],
-    cta: "Launch Ads That Convert",
-    icon: "target",
-    visual: "ads",
-    tone: "pink",
-  },
-  {
-    num: "04",
-    title: ["AI &", "Automation"],
-    body: "Let software handle the repetitive work — follow-ups, reminders, data entry — so your team does not have to.",
-    points: [
-      "Instant lead follow-up",
-      "WhatsApp and email journeys",
-      "AI qualification and routing",
-      "CRM kept up to date on its own",
-    ],
-    cta: "Automate My Business",
-    icon: "bot",
-    visual: "flow",
+    cta: "Grow My Visibility",
+    icon: "search",
     tone: "lav",
   },
   {
-    num: "05",
-    title: ["Web", "Development"],
-    body: "Fast, mobile-first websites designed to build trust and turn visitors into customers.",
+    num: "04",
+    title: ["Ads That", "Convert"],
+    body: "Google and Meta campaigns built around calls and bookings, not just clicks.",
+    short: "Google and Meta campaigns built around calls and bookings, not just clicks.",
     points: [
-      "Modern responsive design",
-      "Built for Core Web Vitals",
-      "Online booking and enquiry forms",
-      "SEO-ready structure",
+      "Google & Meta ad management",
+      "Call tracking on every campaign",
+      "Lower cost per lead",
+      "Transparent spend reporting",
     ],
-    cta: "Get Your Website",
-    icon: "monitor",
-    visual: "site",
+    cta: "Launch Ads That Convert",
+    icon: "megaphone",
     tone: "pink",
   },
   {
-    num: "06",
-    title: ["Business", "Growth"],
-    body: "Strategy, execution and measurement joined up into one system pointed at revenue.",
+    num: "05",
+    title: ["Missed-Call &", "Appointment Automation"],
+    body: "Every missed call is a lost client. We make sure none of them slip through.",
+    short: "Every missed call is a lost client. We make sure none slip through.",
     points: [
-      "Growth roadmap and priorities",
-      "Funnel and conversion tuning",
-      "Reporting you can act on",
+      "Missed-call text-back",
+      "Automated appointment reminders",
+      "WhatsApp/SMS follow-up",
+      "Lead routing to your team",
+    ],
+    cta: "Automate My Business",
+    icon: "phoneCall",
+    tone: "lav",
+  },
+  {
+    num: "06",
+    title: ["Growth Playbook", "for Owners"],
+    body: "Ongoing strategy on pricing, staffing, and offers — based on your own numbers.",
+    short: "Ongoing strategy on pricing, staffing, and offers — based on your own numbers.",
+    points: [
+      "Pricing & offer strategy",
+      "Staffing recommendations",
+      "Monthly growth reporting",
       "A partner, not a vendor",
     ],
     cta: "Build My Growth Plan",
     icon: "chart",
-    visual: "growth",
-    tone: "lav",
+    tone: "pink",
   },
+];
+
+/** Short titles for the compact 2 x 3 phone grid — the live, legible
+ *  restatement of the banner's baked icon arc. Index-aligned with `services`. */
+export const serviceChips: ServiceChip[] = [
+  { label: "Management Software", icon: "cog" },
+  { label: "Website & Booking", icon: "globe" },
+  { label: "Local SEO", icon: "search" },
+  { label: "Ads That Convert", icon: "megaphone" },
+  { label: "Missed-Call Automation", icon: "phoneCall" },
+  { label: "Growth Playbook", icon: "chart" },
 ];
 
 export const products = [
@@ -350,8 +371,9 @@ export const footerColumns = [
       { label: "Home", href: "#top" },
       { label: "Services", href: "#services" },
       { label: "Solutions", href: "#solutions" },
-      { label: "Case Studies", href: "#results" },
+      { label: "Case Studies", href: "#case-studies" },
       { label: "About Us", href: "#process" },
+      { label: "Careers", href: "#careers" },
       { label: "Contact", href: "#contact" },
     ],
   },
@@ -393,6 +415,115 @@ export const comingSoonShared = {
   askBody: "Contact us and we'll help you get started.",
   primary: "Talk to Us",
   secondary: "Close",
+} as const;
+
+/**
+ * Work in progress, stated honestly. Nothing here may claim a finished result,
+ * a client outcome or a completion percentage — both products are still being
+ * built, and the section exists to say exactly that.
+ */
+export const caseStudies = {
+  badge: "In progress",
+  /** Rendered as: plain / violet accent / pink accent. */
+  headline: ["What We're Building", "Right", "Now"],
+  lead: "Real projects, real businesses — results coming soon.",
+  projects: [
+    {
+      id: "salon-platform",
+      tag: "Salon · In Development",
+      title: "Salon Growth & Management Platform",
+      body: "Booking, payroll, and inventory — replacing five tools with one dashboard.",
+      status: "In active development",
+      /** Visual weight of the bar only. Deliberately unlabelled: a number here
+       *  would read as a completion stat, which we cannot substantiate. */
+      progress: 0.6,
+      icon: "scissors" as const,
+      tone: "pink" as const,
+    },
+    {
+      id: "gym-platform",
+      tag: "Gym · In Development",
+      title: "Gym Operations & Growth Platform",
+      body: "Memberships, scheduling, and payroll — built for how gyms actually run.",
+      status: "In active development",
+      progress: 0.4,
+      icon: "dumbbell" as const,
+      tone: "violet" as const,
+    },
+  ],
+  link: "Follow this project",
+} as const;
+
+/**
+ * Careers. `roles` drives the whole section: list any number of openings and
+ * they render as rows with their own Apply button; leave it empty and the
+ * section falls back to the open application card instead. Either way every
+ * button opens the same application form.
+ */
+export const careers = {
+  badge: "Careers",
+  /** Rendered as: plain / violet accent / pink accent. */
+  headline: ["Building Something?", "Join", "Us."],
+  lead: "We're a small team building real software for real businesses — not chasing vanity metrics.",
+  roles: [
+    {
+      id: "frontend",
+      title: "Frontend Developer",
+      blurb: "Help us build the salon & gym dashboards.",
+      icon: "code" as const,
+    },
+    {
+      id: "backend",
+      title: "Backend Developer",
+      blurb: "Build scalable APIs and integrations.",
+      icon: "server" as const,
+    },
+    {
+      id: "design",
+      title: "UI/UX Designer",
+      blurb: "Create beautiful, easy-to-use experiences.",
+      icon: "brush" as const,
+    },
+  ],
+  perks: [
+    {
+      icon: "rocket" as const,
+      title: "Ship real products",
+      body: "Work on software that makes a real impact.",
+    },
+    {
+      icon: "users" as const,
+      title: "Work directly with founders",
+      body: "Small team, big opportunities.",
+    },
+    {
+      icon: "chart" as const,
+      title: "Room to grow with us",
+      body: "Learn, contribute, and grow your career.",
+    },
+  ],
+  apply: "Apply",
+  openTitle: "Don't see a role that fits?",
+  openBody: "We're always happy to hear from talented people — send us your resume.",
+  openCta: "Send Your Resume",
+  emptyTitle: "No open roles right now",
+  emptyBody:
+    "We're not hiring for a specific position at the moment, but we always want to meet good people.",
+} as const;
+
+/** Job application form, opened from every Careers CTA. */
+export const applicationForm = {
+  title: "Apply to Kryptonix",
+  lead: "Tell us who you are and what you'd like to work on. We read every application.",
+  generalRole: "General application",
+  /** Matches the server-side cap in src/app/api/careers/route.ts. */
+  maxResumeMb: 5,
+  accept: ".pdf,.doc,.docx",
+  submit: "Submit Application",
+  success: {
+    title: "Thanks — we've received your application.",
+    body: "We'll shortly connect with you.",
+  },
 } as const;
 
 /** Strategy-call form. */

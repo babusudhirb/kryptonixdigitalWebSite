@@ -4,6 +4,8 @@ import { createElement, useEffect, useRef, useState, type ReactNode } from "reac
 
 type RevealTag = "div" | "article" | "section" | "li" | "header" | "figure";
 
+/** Anything else valid on the rendered element — ids, aria-*, and the pointer
+ *  handlers from `useTilt`, which spread straight onto the card. */
 type RevealProps = {
   children: ReactNode;
   /** Rendered element — Reveal replaces the wrapper rather than adding one, so
@@ -12,9 +14,7 @@ type RevealProps = {
   className?: string;
   /** Stagger, in milliseconds. */
   delay?: number;
-  id?: string;
-  "aria-labelledby"?: string;
-};
+} & Omit<React.HTMLAttributes<HTMLElement>, "className" | "style" | "children">;
 
 /**
  * One-shot fade + rise on scroll. Fully bypassed under

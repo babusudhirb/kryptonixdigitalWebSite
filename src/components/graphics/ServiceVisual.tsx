@@ -1,4 +1,9 @@
-import type { ServiceVisual as Kind } from "@/content/site";
+/**
+ * Currently unused: the salon & gym service cards follow the supplied
+ * reference, which has no visual well. Kept — and self-contained, so it still
+ * type-checks — in case the illustrated card treatment is wanted again.
+ */
+export type Kind = "code" | "rank" | "ads" | "flow" | "site" | "growth";
 
 /**
  * Hand-authored vignette for each service card's visual well.

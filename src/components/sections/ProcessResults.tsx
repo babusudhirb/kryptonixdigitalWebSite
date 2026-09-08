@@ -23,7 +23,14 @@ export function ProcessResults() {
             </h2>
             <p className={styles.lead}>{process.lead}</p>
 
-            <ol className={styles.steps}>
+            {/* On phones this is a horizontal snap rail, so it is focusable and
+                labelled — the four-step count has to survive the scroll. */}
+            <ol
+              className={styles.steps}
+              tabIndex={0}
+              role="group"
+              aria-label={`${process.headline}, ${process.steps.length} steps`}
+            >
               {process.steps.map((s) => (
                 <li key={s.num} className={styles.step}>
                   <span className={styles.disc}>{s.num}</span>

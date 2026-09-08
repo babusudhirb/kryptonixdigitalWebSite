@@ -1,0 +1,258 @@
+.head {
+  margin-bottom: 24px;
+  max-width: 66ch;
+}
+
+.badge {
+  gap: 8px;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--violet);
+  flex: none;
+}
+
+.title {
+  margin-top: 14px;
+  font-size: clamp(26px, 2.6vw + 12px, 40px);
+  line-height: 1.1;
+  letter-spacing: -0.028em;
+}
+
+.accentViolet {
+  color: var(--violet);
+}
+.accentPink {
+  color: var(--pink);
+}
+
+.lead {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.72;
+}
+
+/* ---------- Panel ---------- */
+.panel {
+  border-radius: var(--r-lg);
+  border: 1px solid var(--border);
+  background: linear-gradient(160deg, #fdfbff 0%, #f8f4fd 100%);
+  box-shadow: var(--shadow-card);
+  padding: 10px 26px 22px;
+}
+
+/* ---------- Role rows ---------- */
+.roles {
+  margin: 0;
+}
+
+.role {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.role:last-child {
+  border-bottom: 0;
+}
+
+.tile {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: var(--r-tile);
+  flex: none;
+  background: linear-gradient(160deg, var(--tint-lav), var(--tint-lav-2));
+  color: var(--violet);
+  transition: transform 0.25s var(--ease);
+}
+
+.role:hover .tile {
+  transform: scale(1.06);
+}
+
+.roleText {
+  min-width: 0;
+}
+
+.roleTitle {
+  font-size: 17px;
+  line-height: 1.25;
+  letter-spacing: -0.018em;
+}
+
+.roleBlurb {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+
+/* Plain text action, matching the reference — not a filled button. */
+.apply {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 2px;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--violet);
+  white-space: nowrap;
+  transition: color 0.2s var(--ease), gap 0.2s var(--ease);
+}
+
+.apply:hover {
+  color: var(--pink-text);
+  gap: 11px;
+}
+
+/* ---------- Empty state (no open roles) ---------- */
+.empty {
+  padding: 22px 0 8px;
+}
+
+.emptyCta {
+  margin-top: 16px;
+}
+
+/* ---------- Why work here ---------- */
+.perks {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin: 18px 0 0;
+  padding: 20px 22px;
+  border-radius: var(--r-card);
+  background: var(--tint-lav);
+}
+
+.perks li {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  padding-inline: 20px;
+  border-left: 1px solid #ddd0f5;
+}
+
+.perks li:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
+.perks li:last-child {
+  padding-right: 0;
+}
+
+.perkIcon {
+  color: var(--violet);
+  flex: none;
+  margin-top: 1px;
+}
+
+.perkTitle {
+  font-size: 14.5px;
+  line-height: 1.25;
+  letter-spacing: -0.014em;
+}
+
+.perkBody {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* ---------- Open application row ---------- */
+.openRow {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.mailIcon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  flex: none;
+  background: var(--grad-violet);
+  color: #fff;
+}
+
+.openText {
+  min-width: 0;
+}
+
+.openTitle {
+  font-size: 15px;
+  line-height: 1.25;
+  letter-spacing: -0.014em;
+}
+
+.openBody {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+  .perks {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .perks li {
+    padding-inline: 0;
+    border-left: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  .panel {
+    padding: 6px 18px 18px;
+  }
+  .lead {
+    font-size: 14.5px;
+  }
+
+  /* Icon + text on one row, action beneath and full width for the thumb. */
+  .role,
+  .openRow {
+    grid-template-columns: auto minmax(0, 1fr);
+    row-gap: 12px;
+  }
+  .role .apply,
+  .openRow .apply {
+    grid-column: 1 / -1;
+    justify-content: center;
+    padding: 11px 16px;
+    border-radius: var(--r-btn);
+    background: #fff;
+    border: 1px solid var(--border-2);
+  }
+  .perks {
+    padding: 18px;
+  }
+}
+
+@media (max-width: 380px) {
+  .tile {
+    width: 42px;
+    height: 42px;
+  }
+  .roleTitle {
+    font-size: 16px;
+  }
+}

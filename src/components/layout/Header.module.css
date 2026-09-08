@@ -14,9 +14,9 @@
   box-shadow: var(--shadow-header);
 }
 
-/* The scrim and drawer are children of <header>, so they share its stacking
-   context; the bar needs to sit above them to keep the close button reachable
-   while the drawer is open. */
+/* The scrim and drawer are siblings of <header> at body level. The bar sits
+   above both (100 > 95 > 90) so the X stays reachable while the drawer is open;
+   the drawer still clears every page section, none of which exceeds z-index 3. */
 .bar {
   position: relative;
   z-index: 101;
@@ -139,7 +139,7 @@
   visibility: hidden;
   pointer-events: none;
   transition: opacity 0.28s var(--ease), visibility 0s linear 0.28s;
-  z-index: 98;
+  z-index: 90;
 }
 .scrimOpen {
   opacity: 1;
@@ -154,7 +154,7 @@
 .panelClip {
   position: fixed;
   inset: 0;
-  z-index: 99;
+  z-index: 95;
   overflow: clip;
   pointer-events: none;
 }

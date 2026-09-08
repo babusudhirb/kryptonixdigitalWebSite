@@ -1,20 +1,29 @@
 import {
   Bot,
+  Brush,
   Building2,
   CalendarCheck,
   ChartNoAxesColumnIncreasing,
   CodeXml,
   CreditCard,
   Database,
+  Dumbbell,
   FileSearch,
   Gauge,
+  Globe,
   Headset,
   Link2,
   MapPin,
+  Megaphone,
   Monitor,
   MousePointerClick,
+  PhoneCall,
+  Rocket,
+  Scissors,
   Search,
   Send,
+  Server,
+  Settings,
   ShieldCheck,
   Sparkles,
   Target,
@@ -63,6 +72,21 @@ export const icons = {
   followup: Send,
   booked: CalendarCheck,
   crm: Database,
+
+  // Services (salon & gym)
+  cog: Settings,
+  globe: Globe,
+  megaphone: Megaphone,
+  phoneCall: PhoneCall,
+
+  // Case studies
+  scissors: Scissors,
+  dumbbell: Dumbbell,
+
+  // Careers
+  server: Server,
+  brush: Brush,
+  rocket: Rocket,
 
   // Misc
   card: CreditCard,

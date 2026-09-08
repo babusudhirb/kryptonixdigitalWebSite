@@ -1,0 +1,77 @@
+.main {
+  /* Clears the sticky header, which overlays the top of the document. */
+  padding-top: 120px;
+  padding-bottom: 72px;
+}
+
+.inner {
+  max-width: 760px;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--violet);
+  transition: color 0.2s var(--ease), gap 0.2s var(--ease);
+}
+
+.back:hover {
+  color: var(--pink-text);
+  gap: 12px;
+}
+
+.title {
+  margin-top: 22px;
+  font-size: clamp(30px, 3vw + 14px, 42px);
+  line-height: 1.1;
+  letter-spacing: -0.028em;
+}
+
+.updated {
+  margin-top: 12px;
+  display: inline-block;
+  padding: 6px 13px;
+  border-radius: 999px;
+  background: var(--tint-lav);
+  color: var(--violet);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.intro {
+  margin-top: 20px;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+.section {
+  margin-top: 32px;
+}
+
+.heading {
+  font-size: 19px;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.body {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+@media (max-width: 760px) {
+  .main {
+    padding-top: 104px;
+    padding-bottom: 52px;
+  }
+  .intro {
+    font-size: 15px;
+  }
+}

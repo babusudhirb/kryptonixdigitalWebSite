@@ -1,14 +1,17 @@
-/* Reference board centres the whole head block: pill, then a two-tone display
-   line, then a narrow supporting paragraph. */
+/* Centred head block: pill, then a three-tone display line, then a narrow
+   supporting paragraph — as on the reference board. */
 .head {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  margin-bottom: 40px;
+  /* The head, the banner and the cards share one vertical budget: at 1440x900
+     the heading, the full-width visual and the whole first card row have to land
+     in one screen. Every margin in this section is trimmed for that. */
+  margin-bottom: 16px;
 }
 
-/* Short rules either side of the pill, as on the board. */
+/* Short rules either side of the pill. */
 .badge {
   position: relative;
 }
@@ -31,22 +34,105 @@
 }
 
 .title {
-  margin-top: 18px;
+  margin-top: 12px;
   font-size: clamp(29px, 3.1vw + 10px, 46px);
   line-height: 1.1;
   letter-spacing: -0.028em;
 }
 
-.titleAccent {
+.accentViolet {
   color: var(--violet);
+}
+.accentPink {
+  color: var(--pink);
 }
 
 .lead {
-  margin-top: 14px;
+  margin-top: 10px;
   max-width: 62ch;
   color: var(--muted);
   font-size: 15px;
   line-height: 1.72;
+}
+
+/* ---------- Banner ---------- */
+.banner {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.bannerImage {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+}
+
+/* Desktop. Runs the width of the section, as on the approved board. A
+   height-bounded `width: auto` version of this rendered 691px wide inside a
+   1216px container and read as a small centred photo with 260px of blank either
+   side; that is the mistake this replaces.
+
+   Bounded by WIDTH only — no `max-height`, no `object-fit: cover`. The artwork
+   is 2.64:1 and every millimetre of that height is used: the handwritten line
+   sits at the very top and the "Local SEO" and "Growth Playbook" labels at the
+   very bottom, so ANY vertical crop removes lettering. A 42vh cap was tried and
+   cut all three. 1100px is the widest the band can be while the heading, the
+   visual and the first row of cards still read as one composition — it is 90% of
+   the container, and the 3% edge fade dissolves what is left, so there is no
+   floating rectangle. Never `min-height: 100vh` on the section. */
+.bannerWide {
+  width: 100%;
+  max-width: 1100px;
+  /* "Submerged in the background" — the edges dissolve, the people do not.
+     A mask, deliberately: no blur, no opacity drop, no backdrop-filter, and no
+     border-radius, border or shadow anywhere, so there is no rectangle to see
+     and every face stays exactly as sharp as the source. Only 3% at the sides:
+     this source is full-bleed photography, and a deeper fade would eat the salon
+     shelves and the dumbbell rack that are the point of those edges. The bottom
+     is the deepest because that edge runs into the card grid. */
+  -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 3%,
+      #000 97%,
+      transparent 100%
+    ),
+    linear-gradient(to bottom, transparent 0, #000 4%, #000 86%, transparent 100%);
+  mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 3%,
+      #000 97%,
+      transparent 100%
+    ),
+    linear-gradient(to bottom, transparent 0, #000 4%, #000 86%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+
+/* The phone crop is laid out only below 760px (see the media query). Its flat
+   #f5f3fe field is within 5/255 of --bg-page, so a lighter fade is enough. */
+.bannerPhone {
+  display: none;
+  -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 9%,
+      #000 91%,
+      transparent 100%
+    ),
+    linear-gradient(to bottom, transparent 0, #000 4%, #000 90%, transparent 100%);
+  mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 9%,
+      #000 91%,
+      transparent 100%
+    ),
+    linear-gradient(to bottom, transparent 0, #000 4%, #000 90%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
 }
 
 /* ---------- Card grid ---------- */
@@ -57,14 +143,21 @@
   margin: 0;
 }
 
+/* Scaled down ~15% from the first build so the six cards read as a compact grid
+   under a full-width visual rather than six tall panels. Nothing is removed:
+   number, icon, two-line title, blurb, every bullet and every CTA are all still
+   here, and the tints, hover and tilt are untouched. */
 .card {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  padding: 16px 18px 18px;
   border-radius: var(--r-lg);
-  overflow: hidden;
   border: 1px solid transparent;
-  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease),
+  /* The tilt writes an inline transform; this is what makes it glide. */
+  transition: transform 0.28s var(--ease), box-shadow 0.3s var(--ease),
     border-color 0.3s var(--ease);
+  will-change: transform;
 }
 
 /* Tints alternate diagonally across the 3 x 2 grid so no two same-toned cards
@@ -77,80 +170,93 @@
 }
 
 .card:hover {
-  transform: translateY(-5px);
   box-shadow: var(--shadow-card-hover);
 }
 
-.card:hover .visual {
-  transform: translateY(-3px) scale(1.02);
-}
-
-.card:hover :global(.kx-tile) {
-  transform: scale(1.07);
-}
-
-/* Visual well — the vignette bleeds to the card's own edges. */
-.well {
-  position: relative;
-  padding: 12px 12px 0;
-}
-
-.visual {
-  display: block;
+/* ---------- Card head: number, icon, two-line title ---------- */
+.cardHead {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
   width: 100%;
-  height: auto;
-  transition: transform 0.4s var(--ease);
 }
 
 .num {
-  position: absolute;
-  top: 22px;
-  right: 26px;
+  display: grid;
+  place-items: center;
+  min-width: 34px;
+  height: 26px;
+  padding-inline: 9px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.8);
   font-family: var(--font-display), system-ui, sans-serif;
-  font-size: 34px;
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: -0.03em;
-  color: var(--ink);
-  opacity: 0.11;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--violet);
+  align-self: start;
 }
 
-.cardBody {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  flex: 1;
-  padding: 0 24px 26px;
+.pink .num {
+  color: var(--pink-text);
 }
 
-/* Lifts over the seam between the well and the copy. */
 .tile {
-  margin-top: -6px;
-  width: 48px;
-  height: 48px;
-  background: #fff;
-  box-shadow: 0 4px 14px rgba(21, 10, 56, 0.08);
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  flex: none;
+  background: linear-gradient(160deg, var(--tint-lav), var(--tint-lav-2));
+  color: var(--violet);
+  transition: transform 0.28s var(--ease);
+}
+
+.tilePink {
+  background: linear-gradient(160deg, var(--tint-pink), var(--tint-pink-2));
+  color: var(--pink-text);
+}
+
+.card:hover .tile {
+  transform: scale(1.07);
 }
 
 .cardTitle {
-  margin-top: 16px;
-  font-size: 21px;
-  line-height: 1.2;
+  font-size: 17.5px;
+  line-height: 1.22;
   letter-spacing: -0.022em;
+}
+
+/* The phone-only disclosure control, its short title, its short blurb.
+   `display: contents` on the panel keeps `.body`, `.points` and `.cta` as
+   direct flex children of `.card`, so `.cta { margin-top: auto }` still lines
+   the six CTAs up exactly as before. */
+.toggle,
+.titleShort,
+.short {
+  display: none;
+}
+
+.panel {
+  display: contents;
 }
 
 .body {
   margin-top: 10px;
   color: var(--muted);
-  font-size: 14px;
-  line-height: 1.62;
+  font-size: 13.5px;
+  line-height: 1.55;
 }
 
+/* The bottom margin lives here, not on `.cta`: a `margin-top` on the button
+   would beat its `margin-top: auto` and stop the six CTAs lining up. */
 .points {
   display: flex;
   flex-direction: column;
-  gap: 9px;
-  margin: 18px 0 0;
+  gap: 6px;
+  margin: 10px 0 14px;
   width: 100%;
 }
 
@@ -158,7 +264,7 @@
   display: flex;
   align-items: flex-start;
   gap: 9px;
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 500;
   line-height: 1.45;
   color: var(--ink-2);
@@ -173,43 +279,35 @@
   border-radius: 999px;
   color: #fff;
   flex: none;
-}
-
-.lav .check {
   background: var(--grad-violet);
 }
+
 .pink .check {
   background: var(--grad-pink);
 }
 
+/* Full-width gradient CTA, pinned to the bottom so all six line up even when
+   one card carries an extra bullet. */
 .cta {
   margin-top: auto;
-  padding-top: 0;
+  width: 100%;
+  height: 38px;
 }
 
-.points + .cta {
-  margin-top: 22px;
-}
-
-.footCta {
-  display: none;
-  margin-top: 26px;
-}
-
-/* ---------- Carousel (phone only) ---------- */
-.carousel {
-  display: none;
-}
-
+/* ---------- Responsive ---------- */
 @media (max-width: 1180px) {
   .grid {
-    gap: 18px;
+    gap: 16px;
   }
   .cardTitle {
-    font-size: 19px;
+    font-size: 17px;
   }
-  .cardBody {
-    padding: 0 20px 22px;
+  .card {
+    padding: 16px 18px 18px;
+  }
+  .tile {
+    width: 42px;
+    height: 42px;
   }
 }
 
@@ -220,8 +318,33 @@
 }
 
 @media (max-width: 760px) {
+  /* ---- Guard ----------------------------------------------------------
+     The desktop cards were scaled down to fit the full-width visual; these
+     four properties are the only ones the phone layout did NOT already
+     override, so they are restored to the approved values here. The mobile
+     Services section must render exactly as it did before that change. */
+  .points {
+    gap: 9px;
+  }
+  .points li {
+    font-size: 13.5px;
+  }
+  .body {
+    line-height: 1.62;
+  }
+  .cta {
+    height: 44px;
+  }
+  .title {
+    margin-top: 18px;
+  }
+  .lead {
+    margin-top: 14px;
+  }
+  /* ---------------------------------------------------------------------- */
+
   .head {
-    margin-bottom: 26px;
+    margin-bottom: 22px;
   }
   .lead {
     font-size: 14.5px;
@@ -231,144 +354,172 @@
     width: 20px;
   }
 
-  /* The six-card grid is replaced wholesale by the two-page carousel — never
-     a column of six shrunken cards. */
-  .grid {
+  /* Full-bleed to the viewport edges as in the reference, at the artwork's own
+     ratio — no `cover` crop. Cropping a landscape into a portrait box was what
+     zoomed the figures ~3x and made them look soft; at 1199px source across a
+     390px screen this now renders at ~1.02x even on a DPR-3 phone. */
+  .banner {
+    margin-bottom: 14px;
+    margin-inline: calc(var(--gutter) * -1);
+  }
+
+  /* Swap to the phone crop. */
+  .bannerWide {
     display: none;
   }
-  .carousel {
+
+  .bannerPhone {
     display: block;
-  }
-  .footCta {
-    display: block;
-    text-align: center;
-  }
-  .footCta > * {
     width: 100%;
-    max-width: 340px;
+    /* The height cap is a desktop concern; here the full width is the point. */
+    max-height: none;
   }
 
-  .track {
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: 100%;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    /* Hide the native bar; the dots carry the affordance instead. */
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    overscroll-behavior-x: contain;
-    -webkit-overflow-scrolling: touch;
+  /* ---- The reference's 2 x 3 grid of compact, tappable cards ---- */
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
   }
-  .track::-webkit-scrollbar {
+
+  .card {
+    position: relative;
+    padding: 14px 13px;
+    border-radius: var(--r-card);
+  }
+
+  .cardHead {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 9px;
+  }
+
+  /* The number pill and the two-line desktop title give way to the short
+     label, so the compact card stays three lines tall. */
+  .num,
+  .titleFull {
     display: none;
   }
-  .track:focus-visible {
-    outline: 3px solid rgba(124, 58, 237, 0.5);
-    outline-offset: 4px;
-    border-radius: var(--r-card);
+
+  .tile {
+    width: 38px;
+    height: 38px;
   }
 
-  .page {
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
+  .titleShort {
+    display: block;
+  }
+
+  .cardTitle {
+    font-size: 15px;
+    line-height: 1.2;
+    /* "Missed-Call" must not break at the hyphen into a third line. */
+    hyphens: none;
+  }
+
+  /* The one and only expansion control. It is a chevron and nothing else: no
+     label inside it, no `::after` stretched across the card, and the heading
+     next to it is plain text — so tapping the icon, the title, the blurb or any
+     empty part of the card does nothing at all. Sized for a comfortable target
+     without swallowing the card. */
+  .toggle {
     display: grid;
-    gap: 12px;
-    align-content: start;
-    /* Breathing room between pages without letting a gap sit at the edges. */
-    padding-right: 4px;
-  }
-
-  .mini {
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-    padding: 16px 16px 17px;
-    border-radius: var(--r-card);
-  }
-
-  .miniTile {
-    width: 44px;
-    height: 44px;
-    background: #fff;
-    box-shadow: 0 3px 10px rgba(21, 10, 56, 0.07);
-  }
-
-  .miniCopy {
-    min-width: 0;
-  }
-
-  .miniTitle {
-    font-size: 16.5px;
-    line-height: 1.25;
-    letter-spacing: -0.018em;
-  }
-
-  .miniBody {
-    margin-top: 6px;
-    color: var(--muted);
-    font-size: 13px;
-    line-height: 1.55;
-  }
-
-  .chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 10px;
-  }
-
-  .chips li {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 4px 9px;
+    place-items: center;
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 0;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.75);
-    font-size: 11.5px;
-    font-weight: 600;
-    line-height: 1.3;
-    color: var(--ink-2);
+    background: none;
+    color: var(--violet);
+    cursor: pointer;
   }
 
-  .lav .chips svg {
-    color: var(--violet);
-  }
-  .pink .chips svg {
+  .pink .toggle {
     color: var(--pink-text);
   }
 
-  .dots {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 18px;
+  /* An open card is tall, so the button leaves the vertical centre and stays
+     beside the title it belongs to — which is the only state where the title
+     has to reserve width for it. On a collapsed card the button sits at the
+     card's vertical centre, well below the title, and padding there would push
+     "Website & Booking" onto a third line. */
+  .cardOpen .toggle {
+    top: 8px;
+    transform: none;
   }
 
-  .dot {
-    width: 8px;
-    height: 8px;
-    padding: 0;
-    border-radius: 999px;
-    background: #d9cdf0;
-    transition: width 0.28s var(--ease), background-color 0.28s var(--ease);
+  .cardOpen .cardTitle {
+    padding-right: 38px;
   }
 
-  .dotOn {
-    width: 26px;
-    background: var(--grad-violet);
+  .chevron {
+    flex: none;
+    transition: transform 0.24s var(--ease);
+  }
+
+  .cardOpen .chevron {
+    transform: rotate(90deg);
+  }
+
+  .short {
+    display: block;
+    margin: 9px 0 0;
+    /* Dodges the chevron, which is centred against the collapsed card. */
+    padding-right: 34px;
+    color: var(--muted);
+    font-size: 12.5px;
+    line-height: 1.45;
+  }
+
+  /* Collapsed by default. This is a media-query default, not a JS one, so the
+     panels are already closed on first paint — no flash before hydration. */
+  .panel {
+    display: none;
+  }
+
+  /* An open card takes the whole row: the bullets and the full-width CTA do
+     not fit a 170px column, and clipping them was losing the CTA entirely. */
+  .cardOpen {
+    grid-column: 1 / -1;
+  }
+
+  /* `.short` is the compact restatement of `.body`, so showing both once the
+     card is open just repeats the sentence. */
+  .cardOpen .short {
+    display: none;
+  }
+
+  .cardOpen .panel {
+    display: block;
+    margin-top: 12px;
+  }
+
+  .points {
+    margin: 12px 0 14px;
+  }
+
+  .body {
+    margin-top: 0;
+    font-size: 13px;
   }
 }
 
 @media (max-width: 380px) {
-  .mini {
-    gap: 11px;
-    padding: 14px;
+  /* Two columns get too narrow for the longer labels here. */
+  .grid {
+    grid-template-columns: 1fr;
   }
-  .miniTitle {
-    font-size: 15.5px;
+  .cardTitle {
+    font-size: 16px;
   }
-  .chips li {
-    font-size: 11px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chevron {
+    transition: none;
   }
 }

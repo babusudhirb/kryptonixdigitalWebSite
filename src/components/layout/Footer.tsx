@@ -1,10 +1,17 @@
+import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { brand, footerColumns } from "@/content/site";
 import { Logo } from "./Logo";
 import styles from "./Footer.module.css";
 
-export function Footer() {
+/**
+ * `onLegal` rewrites the section anchors to `/#id`, because the footer is also
+ * rendered on /privacy and /terms where a bare `#id` would point at nothing.
+ */
+export function Footer({ onLegal = false }: { onLegal?: boolean }) {
   const year = new Date().getFullYear();
+  const to = (href: string) =>
+    href.startsWith("#") && onLegal ? `/${href}` : href;
 
   return (
     <footer className={styles.footer} id="contact">
@@ -21,7 +28,7 @@ export function Footer() {
               <ul className={styles.colList}>
                 {col.links.map((l) => (
                   <li key={l.label}>
-                    <a href={l.href} className={styles.colLink}>
+                    <a href={to(l.href)} className={styles.colLink}>
                       {l.label}
                     </a>
                   </li>
@@ -72,8 +79,8 @@ export function Footer() {
           © {year} {brand.name} {brand.tagline}. All rights reserved.
         </p>
         <p className={styles.legalLinks}>
-          <a href="#top">Privacy Policy</a>
-          <a href="#top">Terms of Service</a>
+          <Link href="/privacy">Privacy Policy</Link>
+          <Link href="/terms">Terms of Service</Link>
         </p>
       </div>
     </footer>

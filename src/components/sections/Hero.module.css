@@ -141,37 +141,93 @@
   }
 }
 
-/* Phone: the whole point of this block is to get the orbit visual inside (or
-   within a few pixels of) the first viewport at 390 x 844, without shrinking
-   anything below a comfortable reading size. Everything above 560px is
-   untouched. */
+/* Phone: the orbit sits BESIDE the copy rather than under it, as in the
+   supplied mobile reference, so the whole hero lands inside the first viewport.
+   Everything above 560px is untouched. */
 @media (max-width: 560px) {
   .hero {
-    padding-block-start: 88px;
-    padding-bottom: 34px;
+    padding-block-start: 84px;
+    padding-bottom: 30px;
+    /* The orbit is allowed to run a little past the container edge, as in the
+       reference. `clip` rather than `hidden`: `hidden` would make this a
+       scroll container and break the sticky header. */
+    overflow-x: clip;
   }
+  .grid {
+    position: relative;
+    gap: 0;
+  }
+  /* The orbit is painted behind the copy. Its baked background is exactly
+     var(--asset-hero), the same colour this section is painted, so the text
+     reads over the artwork's flat left edge with no plate or scrim — the
+     "submerged" look the reference has. */
   .copy {
-    gap: 15px;
-    padding-block: 4px 0;
+    position: relative;
+    z-index: 1;
+    gap: 13px;
+    padding-block: 2px 0;
   }
   .headline {
-    font-size: clamp(30px, 8.4vw, 38px);
+    font-size: clamp(23px, 6.3vw, 29px);
     line-height: 1.08;
     letter-spacing: -0.024em;
   }
   .lead {
-    font-size: 14.5px;
-    line-height: 1.6;
-    max-width: none;
+    font-size: 13.5px;
+    line-height: 1.55;
     margin: -2px 0 0;
   }
+  /* Full width: the orbit ends above them, so there is nothing to dodge, and
+     two full-bleed buttons are what the mobile reference shows. */
   .ctas {
     width: 100%;
-    gap: 10px;
+    gap: 9px;
   }
   .ctas > * {
     flex: 1 1 100%;
-    height: 48px;
+    height: 46px;
+  }
+  /* Reserve the right-hand column so no line of text ever runs across the
+     figure or the dashed ring. `max-width`, not `padding-right`: these are
+     shrink-to-fit flex items, so padding would only widen the box and let the
+     text keep its natural width straight over the artwork. Declared last so the
+     per-element rules above cannot reset it. */
+  /* The copy column and the orbit share one 390px line, and every pixel given to
+     one is taken from the other. 53% / 62% is the measured optimum — see the
+     note on `.visual` below. */
+  .headline {
+    max-width: 53%;
+  }
+  .lead {
+    max-width: 50%;
+  }
+
+  /* Absolutely positioned on purpose: it contributes no height, so it cannot
+     push the proof row or the metric strip down the page.
+
+     These two numbers are a solved constraint, not a preference. In
+     hero-orbit.png the six discs span 11% to 89% of the width, so with a box
+     `w` bled `b` past the screen edge:
+         last disc stays on screen  ⇒  b ≤ 0.11w
+         first disc clears the copy ⇒  0.89w − b ≤ 390 − (copy right + 8)
+     Adding them gives a hard ceiling of 0.78w ≤ 187px for the visible ring on a
+     390px screen, whatever the box does — the ring is square, so that caps its
+     height too. 62% with a one-gutter bleed sits exactly on it: 189 x 193 of
+     ring, with only the decorative squiggle past 90% falling off screen.
+     Cropping the artwork's margins away does NOT lift this; it was tried, and
+     the extra size came entirely from slicing the "Ads" and "Automation" discs
+     at the viewport edge. The only real levers are a narrower copy column or a
+     taller orbit artwork than this one. */
+  .visual {
+    position: absolute;
+    z-index: 0;
+    /* Clears the eyebrow pill, which otherwise sits over the "SEO" disc. */
+    top: 18px;
+    right: calc(var(--gutter) * -1);
+    width: 62%;
+    max-width: none;
+    margin-inline: 0;
+    pointer-events: none;
   }
   /* Three across in one row rather than a three-row wrapping list — saves
      roughly 70px of the vertical budget. */
