@@ -27,8 +27,11 @@ npm run lint
   `src/app/globals.css` and each section owns a co-located `.module.css`.
 - **lucide-react** for outline icons; every other graphic (logo, growth chart,
   rocket, curly arrow, dashed connectors) is hand-authored inline SVG.
-- Fonts: **Plus Jakarta Sans** (display) + **Inter** (body), self-hosted at
-  build time via `next/font/google`.
+- Fonts: **Plus Jakarta Sans** (display) + **Inter** (body), committed to the
+  repo as the official variable TTFs (`src/app/fonts/`, SIL OFL 1.1) and loaded
+  with `next/font/local` — the build needs no network access for fonts.
+  Inter's optical-size axis is pinned by `font-optical-sizing: none` in
+  `globals.css`; remove that and large text changes shape.
 
 ## Structure
 

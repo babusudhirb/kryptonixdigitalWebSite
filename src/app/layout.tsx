@@ -1,18 +1,34 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import localFont from "next/font/local";
 import { brand, SITE_URL } from "@/content/site";
 import "./globals.css";
 
-const display = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  weight: ["500", "600", "700", "800"],
+/*
+ * Fonts are self-hosted from the repo, so `next build` makes no network
+ * request for them (next/font/google downloads at build time and crashed
+ * the Hostinger build when Google returned an extensionless file URL).
+ *
+ * Both are the official variable files from github.com/google/fonts (ofl/),
+ * renamed only to drop the brackets and comma from the file names:
+ *   inter/Inter-Variable.ttf                      ← Inter[opsz,wght].ttf
+ *   plus-jakarta-sans/PlusJakartaSans-Variable.ttf ← PlusJakartaSans[wght].ttf
+ * Licence: SIL OFL 1.1, alongside each file as OFL.txt.
+ *
+ * Inter also has an optical-size axis; globals.css pins it with
+ * `font-optical-sizing: none` so text renders as the Google-served Inter did.
+ */
+const display = localFont({
+  src: "./fonts/plus-jakarta-sans/PlusJakartaSans-Variable.ttf",
+  weight: "200 800",
+  style: "normal",
   variable: "--font-display",
   display: "swap",
 });
 
-const body = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
+const body = localFont({
+  src: "./fonts/inter/Inter-Variable.ttf",
+  weight: "100 900",
+  style: "normal",
   variable: "--font-body",
   display: "swap",
 });
