@@ -4,6 +4,12 @@
  * without touching layout, and keeps the section files readable.
  */
 
+/**
+ * Production origin, no trailing slash. Drives metadataBase (canonical and
+ * Open Graph URLs), the JSON-LD `url`, robots.txt and sitemap.xml.
+ */
+export const SITE_URL = "https://kryptonix.digital";
+
 export const brand = {
   name: "KRYPTONIX",
   tagline: "Digital & AI Solutions",

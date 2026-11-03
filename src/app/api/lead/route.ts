@@ -1,12 +1,18 @@
 import { NextResponse } from "next/server";
-import { mailerConfigured, sendLeadEmail } from "@/lib/mailer";
+import { HONEYPOT_FIELD } from "@/lib/honeypot";
+import { mailerConfigured, missingMailVars, sendLeadEmail } from "@/lib/mailer";
+import { rateLimit } from "@/lib/spam";
 
 /**
  * Strategy-call lead intake.
  *
  * A valid lead is emailed to TRIAL_RECEIVER_EMAIL (see src/lib/mailer.ts).
- * When the mail env vars are absent — a bare checkout, no .env.local — the
- * lead is logged instead of dropped, so local dev still works end to end.
+ * Success is only reported once that email has actually been sent: when the
+ * mail env vars are missing the request fails with 503 (and the lead is
+ * logged, so it is not lost), exactly like a failed send.
+ *
+ * Spam: rate limited per IP and per route (src/lib/spam.ts), plus a honeypot
+ * field that bots fill and people never see.
  */
 
 type Body = {
@@ -28,11 +34,31 @@ function validPhone(raw: string) {
 }
 
 export async function POST(request: Request) {
-  let body: Body;
+  const wait = rateLimit(request, "lead");
+  if (wait !== null) {
+    return NextResponse.json(
+      { ok: false, error: "Too many requests. Please try again shortly." },
+      { status: 429, headers: { "Retry-After": String(wait) } },
+    );
+  }
+
+  let body: Body & Record<string, unknown>;
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ ok: false, error: "Malformed request." }, { status: 400 });
+  }
+
+  // Honeypot filled: almost certainly a bot. Answer like a success so it does
+  // not learn to adapt, send nothing, and keep a log line in case a real
+  // person ever trips it.
+  if (str(body[HONEYPOT_FIELD])) {
+    console.warn("[kryptonix] lead honeypot tripped — not emailed", {
+      name: str(body.name),
+      phone: str(body.phone),
+      receivedAt: new Date().toISOString(),
+    });
+    return NextResponse.json({ ok: true });
   }
 
   const lead = {
@@ -56,11 +82,17 @@ export async function POST(request: Request) {
   }
 
   if (!mailerConfigured) {
-    console.warn(
-      "[kryptonix] mail env vars missing — lead not emailed",
-      { ...lead, receivedAt: new Date().toISOString() },
+    // Never claim success for a lead nobody will receive. Log it in full —
+    // this line is the only copy — and name (never print) the missing vars.
+    console.error("[kryptonix] mail not configured — lead NOT emailed", {
+      missing: missingMailVars,
+      lead,
+      receivedAt: new Date().toISOString(),
+    });
+    return NextResponse.json(
+      { ok: false, error: "Could not send that right now." },
+      { status: 503 },
     );
-    return NextResponse.json({ ok: true });
   }
 
   try {

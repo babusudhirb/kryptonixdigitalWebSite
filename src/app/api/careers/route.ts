@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
-import { mailerConfigured, sendApplicationEmail } from "@/lib/mailer";
+import { HONEYPOT_FIELD } from "@/lib/honeypot";
+import { mailerConfigured, missingMailVars, sendApplicationEmail } from "@/lib/mailer";
+import { rateLimit } from "@/lib/spam";
 import { RESUME_MAX_BYTES, resumeProblem, validEmail, validPhone } from "@/lib/validate";
 
 /**
@@ -9,18 +11,37 @@ import { RESUME_MAX_BYTES, resumeProblem, validEmail, validPhone } from "@/lib/v
  * difference: the resume means the body is multipart, not JSON, so this reads
  * `request.formData()` instead of `request.json()`.
  *
- * As with leads, when the mail env vars are absent the application is logged
- * rather than dropped, so local dev works end to end without .env.local.
+ * As with leads, success is only reported once the email has been sent: when
+ * the mail env vars are missing the request fails with 503 and the
+ * application is logged rather than dropped. Same rate limit and honeypot.
  */
 
 const str = (v: FormDataEntryValue | null) => (typeof v === "string" ? v.trim() : "");
 
 export async function POST(request: Request) {
+  const wait = rateLimit(request, "careers");
+  if (wait !== null) {
+    return NextResponse.json(
+      { ok: false, error: "Too many requests. Please try again shortly." },
+      { status: 429, headers: { "Retry-After": String(wait) } },
+    );
+  }
+
   let form: FormData;
   try {
     form = await request.formData();
   } catch {
     return NextResponse.json({ ok: false, error: "Malformed request." }, { status: 400 });
+  }
+
+  // Honeypot filled: answer like a success, send nothing, keep a log line.
+  if (str(form.get(HONEYPOT_FIELD))) {
+    console.warn("[kryptonix] careers honeypot tripped — not emailed", {
+      name: str(form.get("name")),
+      email: str(form.get("email")),
+      receivedAt: new Date().toISOString(),
+    });
+    return NextResponse.json({ ok: true });
   }
 
   const application = {
@@ -65,12 +86,17 @@ export async function POST(request: Request) {
   }
 
   if (!mailerConfigured) {
-    console.warn("[kryptonix] mail env vars missing — application not emailed", {
-      ...application,
+    // Never claim success for an application nobody will receive.
+    console.error("[kryptonix] mail not configured — application NOT emailed", {
+      missing: missingMailVars,
+      application,
       resume: `${file.name} (${bytes.byteLength} bytes)`,
       receivedAt: new Date().toISOString(),
     });
-    return NextResponse.json({ ok: true });
+    return NextResponse.json(
+      { ok: false, error: "Could not send that right now." },
+      { status: 503 },
+    );
   }
 
   try {
