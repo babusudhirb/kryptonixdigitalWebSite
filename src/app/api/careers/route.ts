@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import { HONEYPOT_FIELD } from "@/lib/honeypot";
-import { mailerConfigured, missingMailVars, sendApplicationEmail } from "@/lib/mailer";
+import {
+  mailErrorSummary,
+  mailerConfigured,
+  missingMailVars,
+  sendApplicationEmail,
+} from "@/lib/mailer";
 import { rateLimit } from "@/lib/spam";
 import { RESUME_MAX_BYTES, resumeProblem, validEmail, validPhone } from "@/lib/validate";
 
@@ -12,8 +17,13 @@ import { RESUME_MAX_BYTES, resumeProblem, validEmail, validPhone } from "@/lib/v
  * `request.formData()` instead of `request.json()`.
  *
  * As with leads, success is only reported once the email has been sent: when
- * the mail env vars are missing the request fails with 503 and the
- * application is logged rather than dropped. Same rate limit and honeypot.
+ * the mail env vars are missing the request fails with 503, and a failed send
+ * with 502. Same rate limit and honeypot.
+ *
+ * Privacy: the email is the only record of an application. Server logs are
+ * not application storage and never receive a name, email, phone, role,
+ * message or anything about the resume — only event names, timestamps,
+ * missing env var *names* and SMTP error codes.
  */
 
 const str = (v: FormDataEntryValue | null) => (typeof v === "string" ? v.trim() : "");
@@ -34,12 +44,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "Malformed request." }, { status: 400 });
   }
 
-  // Honeypot filled: answer like a success, send nothing, keep a log line.
+  // Honeypot filled: answer like a success and send nothing. The log line only
+  // counts the event.
   if (str(form.get(HONEYPOT_FIELD))) {
     console.warn("[kryptonix] careers honeypot tripped — not emailed", {
-      name: str(form.get("name")),
-      email: str(form.get("email")),
-      receivedAt: new Date().toISOString(),
+      at: new Date().toISOString(),
     });
     return NextResponse.json({ ok: true });
   }
@@ -86,12 +95,11 @@ export async function POST(request: Request) {
   }
 
   if (!mailerConfigured) {
-    // Never claim success for an application nobody will receive.
+    // Never claim success for an application nobody will receive. Log which
+    // env vars are missing (names only, never values) and when — nothing else.
     console.error("[kryptonix] mail not configured — application NOT emailed", {
       missing: missingMailVars,
-      application,
-      resume: `${file.name} (${bytes.byteLength} bytes)`,
-      receivedAt: new Date().toISOString(),
+      at: new Date().toISOString(),
     });
     return NextResponse.json(
       { ok: false, error: "Could not send that right now." },
@@ -102,8 +110,11 @@ export async function POST(request: Request) {
   try {
     await sendApplicationEmail(application, { filename: file.name, content: bytes });
   } catch (err) {
-    // Log the whole application: the mail is gone, this line is the only copy.
-    console.error("[kryptonix] application email failed", { application, err });
+    // Diagnostic codes only — no application data, no raw error object.
+    console.error("[kryptonix] application email failed", {
+      ...mailErrorSummary(err),
+      at: new Date().toISOString(),
+    });
     return NextResponse.json(
       { ok: false, error: "Could not send that right now." },
       { status: 502 },

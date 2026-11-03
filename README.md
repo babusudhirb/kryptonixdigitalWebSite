@@ -107,15 +107,22 @@ delivering to the live inbox.
 
 Both routes need `EMAIL_USER`, `EMAIL_APP_PASSWORD` and `TRIAL_RECEIVER_EMAIL`
 (`.env.local` locally, the hosting panel in production). If any is missing the
-route answers **503** and logs the submission plus the *names* of the missing
-variables — it never tells a visitor their request went through when no email
-was sent.
+route answers **503**; if Gmail rejects the send it answers **502**. Either way
+the visitor sees the form's error message — the site never tells a visitor
+their request went through when no email was sent.
+
+**The notification email is the only record of a submission.** Server logs are
+not lead storage: the routes never log a name, business, phone, email, role,
+message or anything about a resume. A missing config logs only the *names* of
+the missing variables and a timestamp; a failed send logs only the SMTP error
+codes (`code`, `responseCode`, `command`) and a timestamp. A submission that
+fails is not kept anywhere — the visitor is asked to retry or call.
 
 `lib/spam.ts` rate-limits each route (5 per IP per 10 min, 20 per route per
 hour — answered with 429) and both forms carry a hidden honeypot field
 (`components/ui/Honeypot.tsx`). A filled honeypot gets a silent success, no
-email, and a log line. The counters are in memory: they reset on restart and
-are per process.
+email, and a log line holding only the event and a timestamp. The counters are
+in memory: they reset on restart and are per process.
 
 ## Deployment
 

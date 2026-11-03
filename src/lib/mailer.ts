@@ -40,6 +40,20 @@ export const missingMailVars: string[] = [
 
 export const mailerConfigured = missingMailVars.length === 0;
 
+/**
+ * A send failure reduced to diagnostic codes, safe to log. The raw nodemailer
+ * error is never logged: it can carry the message envelope, addresses or the
+ * server's reply, none of which belongs in hosting logs.
+ */
+export function mailErrorSummary(err: unknown) {
+  const e = (err ?? {}) as { code?: unknown; responseCode?: unknown; command?: unknown };
+  return {
+    code: typeof e.code === "string" ? e.code : undefined,
+    responseCode: typeof e.responseCode === "number" ? e.responseCode : undefined,
+    command: typeof e.command === "string" ? e.command : undefined,
+  };
+}
+
 // One pooled transport for the process; building it per request re-does the
 // TLS handshake and the Gmail login every time.
 let transport: Transporter | null = null;
