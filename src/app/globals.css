@@ -117,6 +117,12 @@ body {
   background: var(--bg-page);
   color: var(--ink-2);
   font-family: var(--font-body), "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* The self-hosted Inter file carries an optical-size axis (opsz 14–32)
+     that the Google-served build did not; browsers would otherwise vary it
+     with font-size. `none` holds it at its default, 14 — the rendering the
+     site was designed with. Inherited everywhere (form controls use
+     `font: inherit`); a no-op for Plus Jakarta Sans, which has no opsz. */
+  font-optical-sizing: none;
   font-size: 15px;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
