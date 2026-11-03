@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import { brand, SITE_URL } from "@/content/site";
 import "./globals.css";
 
 const display = Plus_Jakarta_Sans({
@@ -15,8 +16,6 @@ const body = Inter({
   variable: "--font-body",
   display: "swap",
 });
-
-const SITE_URL = "https://www.kryptonix.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -80,7 +79,7 @@ const jsonLd = {
   description:
     "Kryptonix builds software, drives traffic through SEO and Google Ads, automates operations with AI and creates growth systems for businesses.",
   areaServed: "Worldwide",
-  email: "hello@kryptonix.com",
+  email: brand.email,
   telephone: "+91 7004708826",
   address: {
     "@type": "PostalAddress",

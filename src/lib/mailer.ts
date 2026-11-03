@@ -1,4 +1,4 @@
-import nodemailer from "nodemailer";
+import nodemailer, { type Transporter } from "nodemailer";
 // Shared with the client and both API routes so the rules cannot drift.
 import { telHref } from "./validate";
 
@@ -7,7 +7,8 @@ import { telHref } from "./validate";
  *
  * Gmail SMTP via an App Password — the plain account password will not work
  * and 2-step verification has to be on for the sending account. All three
- * env vars live in .env.local and are read on the server only.
+ * env vars are read on the server only: .env.local in development, the
+ * hosting panel's environment variables in production.
  */
 
 export type Lead = {
@@ -23,12 +24,39 @@ const user = process.env.EMAIL_USER?.trim();
 const pass = process.env.EMAIL_APP_PASSWORD?.replace(/\s+/g, "");
 const to = process.env.TRIAL_RECEIVER_EMAIL?.trim();
 
-/** False when the mail env vars are missing, so callers can fall back to logging. */
-export const mailerConfigured = Boolean(user && pass && to);
+/**
+ * Names (never values) of the mail env vars that are unset or blank. Empty
+ * when mail is fully configured. The API routes refuse to report success
+ * while this is non-empty, so a misconfigured deploy fails loudly instead of
+ * telling visitors their request went through.
+ */
+export const missingMailVars: string[] = [
+  ["EMAIL_USER", user],
+  ["EMAIL_APP_PASSWORD", pass],
+  ["TRIAL_RECEIVER_EMAIL", to],
+]
+  .filter(([, value]) => !value)
+  .map(([name]) => name as string);
+
+export const mailerConfigured = missingMailVars.length === 0;
+
+/**
+ * A send failure reduced to diagnostic codes, safe to log. The raw nodemailer
+ * error is never logged: it can carry the message envelope, addresses or the
+ * server's reply, none of which belongs in hosting logs.
+ */
+export function mailErrorSummary(err: unknown) {
+  const e = (err ?? {}) as { code?: unknown; responseCode?: unknown; command?: unknown };
+  return {
+    code: typeof e.code === "string" ? e.code : undefined,
+    responseCode: typeof e.responseCode === "number" ? e.responseCode : undefined,
+    command: typeof e.command === "string" ? e.command : undefined,
+  };
+}
 
 // One pooled transport for the process; building it per request re-does the
 // TLS handshake and the Gmail login every time.
-let transport: nodemailer.Transporter | null = null;
+let transport: Transporter | null = null;
 function getTransport() {
   if (!transport) {
     transport = nodemailer.createTransport({

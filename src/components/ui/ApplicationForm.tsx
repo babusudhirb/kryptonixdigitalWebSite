@@ -4,6 +4,8 @@ import { useRef, useState } from "react";
 import { ArrowRight, Check, FileText, Loader2, Upload, X } from "lucide-react";
 import { applicationForm, brand, careers } from "@/content/site";
 import { resumeProblem, validEmail, validPhone } from "@/lib/validate";
+import { HONEYPOT_FIELD } from "@/lib/honeypot";
+import { Honeypot, honeypotValue } from "./Honeypot";
 import styles from "./ApplicationForm.module.css";
 
 type Field = "name" | "email" | "phone" | "role" | "resume" | "message";
@@ -93,6 +95,7 @@ export function ApplicationForm({
       body.append("role", values.role);
       body.append("message", values.message);
       if (resume) body.append("resume", resume);
+      body.append(HONEYPOT_FIELD, honeypotValue(formRef.current));
 
       const res = await fetch("/api/careers", { method: "POST", body });
       if (!res.ok) throw new Error(String(res.status));
@@ -255,6 +258,8 @@ export function ApplicationForm({
             placeholder="Anything you'd like us to know — a portfolio link, what you want to work on…"
           />
         </p>
+
+        <Honeypot />
 
         {status === "failed" ? (
           <p className={styles.formErr} role="alert">

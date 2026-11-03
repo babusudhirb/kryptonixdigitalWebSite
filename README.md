@@ -81,7 +81,7 @@ trap and focus restored to the trigger, lifted from the drawer logic already in
 lists no features; keep it that way until they do.
 
 `LeadForm` validates in the browser (values survive a failed submit — it never
-reloads) and posts to `app/api/lead/route.ts`, which re-validates and logs.
+reloads) and posts to `app/api/lead/route.ts`, which re-validates and emails.
 **That route is the one place to wire an email service or CRM** — no other file
 changes. Phone validation accepts the formats Indian users actually type
 (`9876543210`, `+91 98765 43210`, `098765 43210`); email is optional and only
@@ -100,8 +100,36 @@ Validation rules live in `lib/validate.ts` and are imported by the browser *and*
 both API routes, so the two copies can never drift.
 
 ⚠️ **`.env.local` is configured, so submitting this form really sends mail.**
-Use `resumeProblem`-failing fixtures, or temporarily unset `EMAIL_USER`, if you
-want to exercise the form without delivering to the live inbox.
+Use `resumeProblem`-failing fixtures if you want to exercise the form without
+delivering to the live inbox.
+
+### Mail configuration and spam protection
+
+Both routes need `EMAIL_USER`, `EMAIL_APP_PASSWORD` and `TRIAL_RECEIVER_EMAIL`
+(`.env.local` locally, the hosting panel in production). If any is missing the
+route answers **503**; if Gmail rejects the send it answers **502**. Either way
+the visitor sees the form's error message — the site never tells a visitor
+their request went through when no email was sent.
+
+**The notification email is the only record of a submission.** Server logs are
+not lead storage: the routes never log a name, business, phone, email, role,
+message or anything about a resume. A missing config logs only the *names* of
+the missing variables and a timestamp; a failed send logs only the SMTP error
+codes (`code`, `responseCode`, `command`) and a timestamp. A submission that
+fails is not kept anywhere — the visitor is asked to retry or call.
+
+`lib/spam.ts` rate-limits each route (5 per IP per 10 min, 20 per route per
+hour — answered with 429) and both forms carry a hidden honeypot field
+(`components/ui/Honeypot.tsx`). A filled honeypot gets a silent success, no
+email, and a log line holding only the event and a timestamp. The counters are
+in memory: they reset on restart and are per process.
+
+## Deployment
+
+`npm run build`, then `npm start`. The start script is plain `next start`, so
+it listens on the `PORT` the host provides (3000 when unset). `SITE_URL` in
+`src/content/site.ts` drives canonical/Open Graph URLs, JSON-LD,
+`/robots.txt` and `/sitemap.xml`.
 
 ### Open roles
 
@@ -411,5 +439,5 @@ All copy is in `src/content/site.ts`. The metric-strip figures
 (250+ / 50K+ / 98% / 24/7 / 10+) are **design values carried over from the
 supplied concept**, not verified business numbers — replace them there.
 
-`brand.email` is still the placeholder `hello@kryptonix.com` — the phone and
-postal address are real, that address has not been confirmed.
+`brand.email` is `support@kryptonix.digital`, and the JSON-LD in `layout.tsx`
+reads it from there.

@@ -3,6 +3,8 @@
 import { useRef, useState } from "react";
 import { ArrowRight, Check, Loader2 } from "lucide-react";
 import { leadForm } from "@/content/site";
+import { HONEYPOT_FIELD } from "@/lib/honeypot";
+import { Honeypot, honeypotValue } from "./Honeypot";
 import styles from "./LeadForm.module.css";
 
 type Field = "name" | "business" | "interest" | "phone" | "email";
@@ -66,7 +68,7 @@ export function LeadForm({ titleId, onDone }: { titleId: string; onDone: () => v
       const res = await fetch("/api/lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
+        body: JSON.stringify({ ...values, [HONEYPOT_FIELD]: honeypotValue(formRef.current) }),
       });
       if (!res.ok) throw new Error(String(res.status));
       setStatus("sent");
@@ -166,6 +168,8 @@ export function LeadForm({ titleId, onDone }: { titleId: string; onDone: () => v
           error={errors.email}
           onChange={set("email")}
         />
+
+        <Honeypot />
 
         {status === "failed" ? (
           <p className={styles.formErr} role="alert">
